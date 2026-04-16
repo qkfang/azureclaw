@@ -35,6 +35,10 @@ Write-Host ">>> Installing OpenClaw..."
 $env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + `
     ';' + [System.Environment]::GetEnvironmentVariable('Path','User')
 npm install -g openclaw
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "OpenClaw installation failed with exit code $LASTEXITCODE"
+    exit 1
+}
 
 # Step 6 – Ensure Node/npm paths are permanently in system PATH
 Write-Host ">>> Updating system PATH..."
@@ -43,13 +47,13 @@ $npmUserPath    = [System.Environment]::GetFolderPath('ApplicationData') + '\npm
 $currentPath    = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
 
 if ($currentPath -notlike "*$npmGlobalPath*") {
-    $newPath = $currentPath + ';' + $npmGlobalPath
-    [System.Environment]::SetEnvironmentVariable('Path', $newPath, 'Machine')
+    $currentPath = $currentPath + ';' + $npmGlobalPath
+    [System.Environment]::SetEnvironmentVariable('Path', $currentPath, 'Machine')
     Write-Host "Added Node.js path to system PATH"
 }
 if ($currentPath -notlike "*$npmUserPath*") {
-    $newPath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + $npmUserPath
-    [System.Environment]::SetEnvironmentVariable('Path', $newPath, 'Machine')
+    $currentPath = $currentPath + ';' + $npmUserPath
+    [System.Environment]::SetEnvironmentVariable('Path', $currentPath, 'Machine')
     Write-Host "Added npm global path to system PATH"
 }
 
