@@ -9,8 +9,9 @@ set -euo pipefail
 ###############################################################################
 # Configuration — edit these or export them before running the script
 ###############################################################################
-RG="${RG:-rg-openclaw-win}"
-LOCATION="${LOCATION:-westus2}"
+RG="${RG:-rg-openclaw}"
+LOCATION="${LOCATION:-australiaeast}"
+VM_SIZE="${VM_SIZE:-Standard_D2s_v5}"
 ADMIN_USERNAME="${ADMIN_USERNAME:-clawadmin}"
 ADMIN_PASSWORD="${ADMIN_PASSWORD:?Please export ADMIN_PASSWORD before running this script}"
 
@@ -32,6 +33,8 @@ az deployment group create \
   -g "${RG}" \
   --template-file "${BICEP_FILE}" \
   --parameters "${PARAM_FILE}" \
+  --parameters location="${LOCATION}" \
+  --parameters vmSize="${VM_SIZE}" \
   --parameters adminPassword="${ADMIN_PASSWORD}" \
   -o none
 

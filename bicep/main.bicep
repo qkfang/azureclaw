@@ -12,6 +12,10 @@ param location string = resourceGroup().location
 @description('Virtual machine name.')
 param vmName string = 'win11-openclaw-vm'
 
+@description('Windows computer name (max 15 characters).')
+@maxLength(15)
+param computerName string = 'win11clawvm'
+
 @description('Network security group name.')
 param nsgName string = 'nsg-openclaw-win'
 
@@ -31,9 +35,12 @@ param vnetPrefix string = '10.50.0.0/16'
 @description('Subnet prefix.')
 param subnetPrefix string = '10.50.1.0/24'
 
+@description('Bastion subnet prefix (minimum /26).')
+param bastionSubnetPrefix string = '10.50.2.0/26'
+
 // --- VM ----------------------------------------------------------------------
 @description('VM size SKU.')
-param vmSize string = 'Standard_B2s'
+param vmSize string = 'Standard_D2s_v5'
 
 @description('Admin username.')
 param adminUsername string
@@ -89,6 +96,12 @@ resource vnet 'Microsoft.Network/virtualNetworks@2024-05-01' = {
           }
         }
       }
+      {
+        name: 'AzureBastionSubnet'
+        properties: {
+          addressPrefix: bastionSubnetPrefix
+        }
+      }
     ]
   }
 }
@@ -104,6 +117,46 @@ resource publicIp 'Microsoft.Network/publicIPAddresses@2024-05-01' = {
   }
   properties: {
     publicIPAllocationMethod: 'Static'
+  }
+}
+
+// =============================================================================
+// Public IP for Azure Bastion
+// =============================================================================
+resource bastionPublicIp 'Microsoft.Network/publicIPAddresses@2024-05-01' = {
+  name: 'pip-bastion-win'
+  location: location
+  sku: {
+    name: 'Standard'
+  }
+  properties: {
+    publicIPAllocationMethod: 'Static'
+  }
+}
+
+// =============================================================================
+// Azure Bastion Host
+// =============================================================================
+resource bastion 'Microsoft.Network/bastionHosts@2024-05-01' = {
+  name: 'bastion-openclaw-win'
+  location: location
+  sku: {
+    name: 'Basic'
+  }
+  properties: {
+    ipConfigurations: [
+      {
+        name: 'bastionIpConfig'
+        properties: {
+          subnet: {
+            id: '${vnet.id}/subnets/AzureBastionSubnet'
+          }
+          publicIPAddress: {
+            id: bastionPublicIp.id
+          }
+        }
+      }
+    ]
   }
 }
 
@@ -142,7 +195,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2024-07-01' = {
       vmSize: vmSize
     }
     osProfile: {
-      computerName: vmName
+      computerName: computerName
       adminUsername: adminUsername
       adminPassword: adminPassword
     }
@@ -156,7 +209,7 @@ resource vm 'Microsoft.Compute/virtualMachines@2024-07-01' = {
       osDisk: {
         createOption: 'FromImage'
         managedDisk: {
-          storageAccountType: 'StandardSSD_LRS'
+          storageAccountType: 'Premium_LRS'
         }
       }
     }
@@ -175,4 +228,5 @@ resource vm 'Microsoft.Compute/virtualMachines@2024-07-01' = {
 // =============================================================================
 output vmName string = vm.name
 output publicIpAddress string = publicIp.properties.ipAddress
+output bastionPublicIpAddress string = bastionPublicIp.properties.ipAddress
 output adminUsername string = adminUsername

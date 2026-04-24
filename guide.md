@@ -74,7 +74,7 @@ Edit variables at the top of `scripts/linux/deploy-linux-vm.sh` or export them:
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `RG` | `rg-openclaw` | Resource group name |
-| `LOCATION` | `westus2` | Azure region |
+| `LOCATION` | `australiaeast` | Azure region |
 | `ADMIN_USERNAME` | `openclaw` | VM admin username |
 | `SSH_KEY_PATH` | `~/.ssh/id_ed25519` | Path to SSH private key |
 
@@ -168,7 +168,8 @@ Edit variables at the top of `scripts/windows/deploy-windows-vm.sh` or export th
 | Variable | Default | Description |
 |----------|---------|-------------|
 | `RG` | `rg-openclaw-win` | Resource group name |
-| `LOCATION` | `westus2` | Azure region |
+| `LOCATION` | `australiaeast` | Azure region |
+| `VM_SIZE` | `Standard_D2s_v5` | VM SKU for Windows 11 VM |
 | `ADMIN_USERNAME` | `clawadmin` | VM admin username |
 | `ADMIN_PASSWORD` | *(must be set)* | VM admin password (export before running) |
 
@@ -176,6 +177,14 @@ Edit variables at the top of `scripts/windows/deploy-windows-vm.sh` or export th
 > ```bash
 > export ADMIN_PASSWORD='YourStr0ng!Passw0rd'
 > ```
+
+If you hit `SkuNotAvailable`, try a different SKU or region without editing files:
+
+```bash
+export VM_SIZE='Standard_D4s_v5'   # or Standard_D2as_v5, Standard_D2s_v3
+export LOCATION='eastus2'          # or centralus
+./scripts/windows/deploy-windows-vm.sh
+```
 
 You can also edit `bicep/windows-vm/main.bicepparam` to change VM size or networking CIDRs.
 
