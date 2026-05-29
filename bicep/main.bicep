@@ -40,7 +40,7 @@ param bastionSubnetPrefix string = '10.50.2.0/26'
 
 // --- VM ----------------------------------------------------------------------
 @description('VM size SKU.')
-param vmSize string = 'Standard_D2s_v5'
+param vmSize string = 'Standard_D4s_v5'
 
 @description('Admin username.')
 param adminUsername string

@@ -4,7 +4,7 @@ using './main.bicep'
 //   az deployment group create ... --parameters main.bicepparam adminPassword='<YourStrongPassword>'
 
 param location = 'australiaeast'
-param vmSize = 'F4-2amds_v7'
+param vmSize = 'Standard_D4s_v5'
 param adminUsername = 'clawadmin'
 param adminPassword = 'YourStr0ng!Passw0rd'
 // adminPassword must be supplied at deploy time.
