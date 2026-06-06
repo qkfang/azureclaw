@@ -1,8 +1,6 @@
 name: Start Azure VM at 6AM
 
 on:
-  schedule:
-    - cron: '0 6 * * *'
   workflow_dispatch:
 
 permissions:
@@ -10,19 +8,13 @@ permissions:
   contents: read
 
 env:
-  RESOURCE_GROUP: ${{ vars.AZURE_VM_RESOURCE_GROUP }}
-  VM_NAME: ${{ vars.AZURE_VM_NAME }}
+  RESOURCE_GROUP: rg-azclaw
+  VM_NAME: win11-openclaw-vm
 
 jobs:
   start-vm:
     runs-on: ubuntu-latest
     steps:
-      - name: Validate required configuration
-        run: |
-          if [ -z "${RESOURCE_GROUP}" ] || [ -z "${VM_NAME}" ]; then
-            echo "Set repository variables AZURE_VM_RESOURCE_GROUP and AZURE_VM_NAME before running this workflow." >&2
-            exit 1
-          fi
 
       - name: Azure login
         uses: azure/login@v2
