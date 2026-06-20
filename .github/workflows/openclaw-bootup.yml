@@ -20,7 +20,7 @@ jobs:
       - name: Start VM
         run: az vm start --resource-group rg-azclaw --name win11-openclaw-vm
 
-      - name: Trigger IaC deploy in opc-playground-shared
+      - name: IaC (opc-playground-shared)
         run: |
           curl -L -X POST \
             -H "Accept: application/vnd.github+json" \
